@@ -33,6 +33,22 @@ func (q *Queries) CreateNewGoal(ctx context.Context, arg CreateNewGoalParams) (G
 	return i, err
 }
 
+const createNewGoalCompletion = `-- name: CreateNewGoalCompletion :exec
+INSERT INTO public.goal_completions
+(id, goal_id, created_at)
+VALUES($1, $2, now())
+`
+
+type CreateNewGoalCompletionParams struct {
+	ID     string `json:"id"`
+	GoalID string `json:"goal_id"`
+}
+
+func (q *Queries) CreateNewGoalCompletion(ctx context.Context, arg CreateNewGoalCompletionParams) error {
+	_, err := q.db.ExecContext(ctx, createNewGoalCompletion, arg.ID, arg.GoalID)
+	return err
+}
+
 const deleteAllGoalCompletions = `-- name: DeleteAllGoalCompletions :exec
 DELETE FROM public.goal_completions
 `

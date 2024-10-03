@@ -24,6 +24,7 @@ func NewGoalsRepository(conn *sql.DB) *GoalsRepository {
 
 type GoalsRepositoryInterface interface {
 	CreateNewGoal(createNewGoalDto request.CreateNewGoalRequest) (db.Goal, error)
+	CreateNewGoalCompletion(goalId string) error
 	DeleteAllGoals() error
 	DeleteAllGoalCompletions() error
 }
@@ -38,6 +39,16 @@ func (g *GoalsRepository) CreateNewGoal(createNewGoalDto request.CreateNewGoalRe
 	})
 
 	return createdGoal, err
+}
+
+func (g *GoalsRepository) CreateNewGoalCompletion(goalId string) error {
+	ctx := context.Background()
+
+	err := g.Queries.CreateNewGoalCompletion(ctx, db.CreateNewGoalCompletionParams{
+		ID:     uuid.New().String(),
+		GoalID: goalId,
+	})
+	return err
 }
 
 func (g *GoalsRepository) DeleteAllGoals() error {
