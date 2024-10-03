@@ -4,9 +4,8 @@ import (
 	"target/cmd"
 	"target/config"
 	"target/db"
-	"target/internal/handler"
+	"target/db/seeds"
 	"target/internal/repository"
-	"target/internal/service"
 )
 
 func main() {
@@ -22,10 +21,10 @@ func main() {
 		SSLMode: loadedConfig.DBSSLMode,
 	})
 
-	authorRepository := repository.NewAuthorsRepository(connDb)
-	authorsService := service.NewAuthorsService(*authorRepository)
+	goalsRepository := repository.NewGoalsRepository(connDb)
+	seeds := seeds.NewSeedsRun(*goalsRepository)
 
-	authorHandler := handler.NewAuthorHandler(*authorsService)
+	seeds.Run()
 
-	cmd.Server(authorHandler)
+	cmd.Server()
 }
