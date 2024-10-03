@@ -9,6 +9,30 @@ import (
 	"context"
 )
 
+const createNewGoal = `-- name: CreateNewGoal :one
+INSERT INTO public.goals
+(id, title, desired_weekly_frequency, created_at)
+VALUES($1, $2, $3, now()) RETURNING id, title, desired_weekly_frequency, created_at
+`
+
+type CreateNewGoalParams struct {
+	ID                     string `json:"id"`
+	Title                  string `json:"title"`
+	DesiredWeeklyFrequency int32  `json:"desired_weekly_frequency"`
+}
+
+func (q *Queries) CreateNewGoal(ctx context.Context, arg CreateNewGoalParams) (Goal, error) {
+	row := q.db.QueryRowContext(ctx, createNewGoal, arg.ID, arg.Title, arg.DesiredWeeklyFrequency)
+	var i Goal
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.DesiredWeeklyFrequency,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const deleteAllGoalCompletions = `-- name: DeleteAllGoalCompletions :exec
 DELETE FROM public.goal_completions
 `

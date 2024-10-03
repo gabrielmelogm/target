@@ -4,6 +4,9 @@ import (
 	"context"
 	"database/sql"
 	db "target/db/sqlc"
+	"target/internal/request"
+
+	"github.com/google/uuid"
 )
 
 type GoalsRepository struct {
@@ -20,8 +23,21 @@ func NewGoalsRepository(conn *sql.DB) *GoalsRepository {
 }
 
 type GoalsRepositoryInterface interface {
+	CreateNewGoal(createNewGoalDto request.CreateNewGoalRequest) (db.Goal, error)
 	DeleteAllGoals() error
 	DeleteAllGoalCompletions() error
+}
+
+func (g *GoalsRepository) CreateNewGoal(createNewGoalDto request.CreateNewGoalRequest) (db.Goal, error) {
+	ctx := context.Background()
+
+	createdGoal, err := g.Queries.CreateNewGoal(ctx, db.CreateNewGoalParams{
+		ID:                     uuid.New().String(),
+		Title:                  createNewGoalDto.Title,
+		DesiredWeeklyFrequency: int32(createNewGoalDto.DesiredWeeklyFrequency),
+	})
+
+	return createdGoal, err
 }
 
 func (g *GoalsRepository) DeleteAllGoals() error {
