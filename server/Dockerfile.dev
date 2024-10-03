@@ -1,0 +1,15 @@
+FROM golang:1.22
+
+RUN \
+  apt-get update -y && \
+  apt-get install -y openssl wkhtmltopdf
+
+WORKDIR /go/src/app
+
+COPY . .
+
+RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest && \
+		go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
+CMD ["tail", "-f", "/dev/null"]
+
