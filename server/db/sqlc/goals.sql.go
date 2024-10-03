@@ -9,6 +9,15 @@ import (
 	"context"
 )
 
+const deleteAllGoalCompletions = `-- name: DeleteAllGoalCompletions :exec
+DELETE FROM public.goal_completions
+`
+
+func (q *Queries) DeleteAllGoalCompletions(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, deleteAllGoalCompletions)
+	return err
+}
+
 const deleteAllGoals = `-- name: DeleteAllGoals :exec
 DELETE FROM public.goals
 `
