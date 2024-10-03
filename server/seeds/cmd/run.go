@@ -1,6 +1,7 @@
-package seeds
+package cmd
 
 import (
+	"fmt"
 	"target/internal/repository"
 	"target/internal/request"
 )
@@ -29,6 +30,8 @@ func (s *SeedsRun) Run() error {
 	if err != nil {
 		panic(err)
 	}
+
+	fmt.Println("Seeded database!")
 
 	return err
 }

@@ -12,3 +12,8 @@ migration-up:
 migration-down:
 	@echo "$(CYAN)Starting migration... $(RED) DOWN $(NC)"
 	migrate -path db/migrations -database "postgres://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}${DB_SSL_MODE}" -verbose down 
+
+# Seeds
+seeds-run:
+	@echo "$(GREEN)Seeding database... 🌱 $(NC)"
+	go run seeds/main.go 
