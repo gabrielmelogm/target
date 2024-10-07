@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	db "target/db/sqlc"
 	"target/internal/request"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -41,12 +42,19 @@ func (g *GoalsRepository) CreateNewGoal(createNewGoalDto request.CreateNewGoalRe
 	return createdGoal, err
 }
 
-func (g *GoalsRepository) CreateNewGoalCompletion(goalId string) error {
+func (g *GoalsRepository) CreateNewGoalCompletion(goalId string, createdAt time.Time) error {
 	ctx := context.Background()
 
+	completeData := createdAt
+
+	if createdAt.IsZero() {
+		completeData = time.Now()
+	}
+
 	err := g.Queries.CreateNewGoalCompletion(ctx, db.CreateNewGoalCompletionParams{
-		ID:     uuid.New().String(),
-		GoalID: goalId,
+		ID:        uuid.New().String(),
+		GoalID:    goalId,
+		CreatedAt: completeData,
 	})
 	return err
 }

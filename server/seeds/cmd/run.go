@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	db "target/db/sqlc"
 	"target/internal/repository"
 	"target/internal/request"
+	"time"
 )
 
 type SeedsRun struct {
@@ -20,16 +22,38 @@ func (s *SeedsRun) Run() error {
 	err := s.GoalsRepository.DeleteAllGoalCompletions()
 	err = s.GoalsRepository.DeleteAllGoals()
 
-	createdGoal, err := s.GoalsRepository.CreateNewGoal(request.CreateNewGoalRequest{
-		Title:                  "John Doe",
-		DesiredWeeklyFrequency: 4,
-	})
-
-	err = s.GoalsRepository.CreateNewGoalCompletion(createdGoal.ID)
-
-	if err != nil {
-		panic(err)
+	goals := []request.CreateNewGoalRequest{
+		{
+			Title:                  "Acordar cedo",
+			DesiredWeeklyFrequency: 5,
+		},
+		{
+			Title:                  "Me exercitar",
+			DesiredWeeklyFrequency: 3,
+		},
+		{
+			Title:                  "Meditar",
+			DesiredWeeklyFrequency: 1,
+		},
 	}
+
+	var createdGoals []db.Goal
+
+	for _, goal := range goals {
+		createdGoal, err := s.GoalsRepository.CreateNewGoal(request.CreateNewGoalRequest{
+			Title:                  goal.Title,
+			DesiredWeeklyFrequency: goal.DesiredWeeklyFrequency,
+		})
+
+		if err != nil {
+			panic(err)
+		}
+		
+		createdGoals = append(createdGoals, createdGoal)
+	}
+
+	err = s.GoalsRepository.CreateNewGoalCompletion(createdGoals[0].ID, time.Now())
+	err = s.GoalsRepository.CreateNewGoalCompletion(createdGoals[1].ID, time.Now().AddDate(0, 0, -2))
 
 	fmt.Println("Seeded database!")
 

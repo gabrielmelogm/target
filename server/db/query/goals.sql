@@ -6,7 +6,7 @@ VALUES($1, $2, $3, now()) RETURNING *;
 -- name: CreateNewGoalCompletion :exec
 INSERT INTO public.goal_completions
 (id, goal_id, created_at)
-VALUES($1, $2, now());
+VALUES($1, $2, $3);
 
 -- name: DeleteAllGoals :exec
 DELETE FROM public.goals;
