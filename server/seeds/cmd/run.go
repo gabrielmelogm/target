@@ -35,6 +35,14 @@ func (s *SeedsRun) Run() error {
 			Title:                  "Meditar",
 			DesiredWeeklyFrequency: 1,
 		},
+		{
+			Title:                  "Nadar",
+			DesiredWeeklyFrequency: 2,
+		},
+		{
+			Title:                  "Não usar o celular",
+			DesiredWeeklyFrequency: 3,
+		},
 	}
 
 	var createdGoals []db.Goal
@@ -48,7 +56,7 @@ func (s *SeedsRun) Run() error {
 		if err != nil {
 			panic(err)
 		}
-		
+
 		createdGoals = append(createdGoals, createdGoal)
 	}
 

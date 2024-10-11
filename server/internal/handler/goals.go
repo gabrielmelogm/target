@@ -20,6 +20,16 @@ func NewGoalHandler(goalsService service.GoalsService) *GoalsHandler {
 	}
 }
 
+func (g *GoalsHandler) GetPendingGoals(c echo.Context) error {
+	goals, err := g.GoalsService.GetPendingGoals()
+
+	if err != nil {
+		c.JSON(http.StatusOK, nil)
+	}
+
+	return c.JSON(http.StatusOK, goals)
+}
+
 func (g *GoalsHandler) CreateNewGoal(c echo.Context) error {
 	var data request.CreateNewGoalRequest
 

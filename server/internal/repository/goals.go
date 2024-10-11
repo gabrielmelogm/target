@@ -24,10 +24,42 @@ func NewGoalsRepository(conn *sql.DB) *GoalsRepository {
 }
 
 type GoalsRepositoryInterface interface {
+	GetPendingGoals(firstDayOfWeek time.Time, lastDayOfWeek time.Time) ([]db.GetPendingGoalsRow, error)
 	CreateNewGoal(createNewGoalDto request.CreateNewGoalRequest) (db.Goal, error)
 	CreateNewGoalCompletion(goalId string) error
 	DeleteAllGoals() error
 	DeleteAllGoalCompletions() error
+}
+
+type GetPendingGoalsResponse struct {
+	Id                     string    `json:"id"`
+	Title                  string    `json:"title"`
+	DesiredWeeklyFrequency int       `json:"desired_weekly_frequency"`
+	CreatedAt              time.Time `json:"created_at"`
+	CompletionCount        int       `json:"completion_count"`
+}
+
+func (g *GoalsRepository) GetPendingGoals(firstDayOfWeek time.Time, lastDayOfWeek time.Time) ([]GetPendingGoalsResponse, error) {
+	ctx := context.Background()
+
+	goals, err := g.Queries.GetPendingGoals(ctx, db.GetPendingGoalsParams{
+		CreatedAt:   firstDayOfWeek,
+		CreatedAt_2: lastDayOfWeek,
+	})
+
+	var formatedGoals []GetPendingGoalsResponse
+
+	for _, X := range goals {
+		formatedGoals = append(formatedGoals, GetPendingGoalsResponse{
+			Id:                     X.ID,
+			Title:                  X.Title,
+			DesiredWeeklyFrequency: int(X.DesiredWeeklyFrequency),
+			CreatedAt:              X.CreatedAt,
+			CompletionCount:        int(X.CompletionCount.Int64),
+		})
+	}
+
+	return formatedGoals, err
 }
 
 func (g *GoalsRepository) CreateNewGoal(createNewGoalDto request.CreateNewGoalRequest) (db.Goal, error) {

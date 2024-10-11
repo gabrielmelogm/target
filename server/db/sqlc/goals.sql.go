@@ -7,6 +7,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
@@ -67,4 +68,69 @@ DELETE FROM public.goals
 func (q *Queries) DeleteAllGoals(ctx context.Context) error {
 	_, err := q.db.ExecContext(ctx, deleteAllGoals)
 	return err
+}
+
+const getPendingGoals = `-- name: GetPendingGoals :many
+WITH goals_created_up_to_week AS (
+    SELECT id, title, desired_weekly_frequency, goals.created_at 
+    FROM goals 
+    WHERE goals.created_at <= $2
+),
+goal_completion_counts AS (
+    SELECT goal_id, COUNT(id) AS completion_count
+    FROM goal_completions
+    WHERE goal_completions.created_at >= $1
+      AND goal_completions.created_at <= $2
+    GROUP BY goal_completions.goal_id
+)
+select
+	goals_created_up_to_week.id,
+	goals_created_up_to_week.title,
+	goals_created_up_to_week.desired_weekly_frequency,
+	goals_created_up_to_week.created_at,
+	goal_completion_counts.completion_count
+FROM goals_created_up_to_week
+LEFT JOIN goal_completion_counts ON goals_created_up_to_week.id = goal_completion_counts.goal_id
+`
+
+type GetPendingGoalsParams struct {
+	CreatedAt   time.Time `json:"created_at"`
+	CreatedAt_2 time.Time `json:"created_at_2"`
+}
+
+type GetPendingGoalsRow struct {
+	ID                     string        `json:"id"`
+	Title                  string        `json:"title"`
+	DesiredWeeklyFrequency int32         `json:"desired_weekly_frequency"`
+	CreatedAt              time.Time     `json:"created_at"`
+	CompletionCount        sql.NullInt64 `json:"completion_count"`
+}
+
+func (q *Queries) GetPendingGoals(ctx context.Context, arg GetPendingGoalsParams) ([]GetPendingGoalsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getPendingGoals, arg.CreatedAt, arg.CreatedAt_2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetPendingGoalsRow
+	for rows.Next() {
+		var i GetPendingGoalsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.DesiredWeeklyFrequency,
+			&i.CreatedAt,
+			&i.CompletionCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
