@@ -26,6 +26,7 @@ func NewGoalsRepository(conn *sql.DB) *GoalsRepository {
 type GoalsRepositoryInterface interface {
 	GetPendingGoals(firstDayOfWeek time.Time, lastDayOfWeek time.Time) ([]db.GetPendingGoalsRow, error)
 	GetGoalCompletionsCountById(goalId string, firstDayOfWeek time.Time, lastDayOfWeek time.Time) (db.GetGoalCompletionsCountByIdRow, error)
+	GetWeekSummary(firstDayOfWeek time.Time, lastDayOfWeek time.Time) (db.GetWeekSummaryRow, error)
 	CreateNewGoal(createNewGoalDto request.CreateNewGoalRequest) (db.Goal, error)
 	CreateNewGoalCompletion(goalId string) error
 	DeleteAllGoals() error
@@ -61,6 +62,17 @@ func (g *GoalsRepository) GetPendingGoals(firstDayOfWeek time.Time, lastDayOfWee
 	}
 
 	return formatedGoals, err
+}
+
+func (g *GoalsRepository) GetWeekSummary(firstDayOfWeek time.Time, lastDayOfWeek time.Time) (db.GetWeekSummaryRow, error) {
+	ctx := context.Background()
+
+	summary, err := g.Queries.GetWeekSummary(ctx, db.GetWeekSummaryParams{
+		CreatedAt:   firstDayOfWeek,
+		CreatedAt_2: lastDayOfWeek,
+	})
+
+	return summary, err
 }
 
 func (g *GoalsRepository) GetGoalCompletionsCountById(goalId string, firstDayOfWeek time.Time, lastDayOfWeek time.Time) (db.GetGoalCompletionsCountByIdRow, error) {

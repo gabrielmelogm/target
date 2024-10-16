@@ -9,6 +9,7 @@ import (
 func Server(goal *handler.GoalsHandler) {
 	e := echo.New()
 
+	e.GET("/summary", goal.GetWeekSummary)
 	e.GET("/pending-goals", goal.GetPendingGoals)
 	e.POST("/completions", goal.CreateNewGoalCompletionById)
 	e.POST("/goal", goal.CreateNewGoal)

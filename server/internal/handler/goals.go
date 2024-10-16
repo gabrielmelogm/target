@@ -20,6 +20,16 @@ func NewGoalHandler(goalsService service.GoalsService) *GoalsHandler {
 	}
 }
 
+func (g *GoalsHandler) GetWeekSummary(c echo.Context) error {
+	summary, err := g.GoalsService.GetWeekSummary()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+	}
+
+	return c.JSON(http.StatusOK, summary)
+}
+
 func (g *GoalsHandler) GetPendingGoals(c echo.Context) error {
 	goals, err := g.GoalsService.GetPendingGoals()
 

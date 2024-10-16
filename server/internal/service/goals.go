@@ -35,7 +35,6 @@ func (g *GoalsService) CreateNewGoalCompletion(goalId string) error {
 
 	goalCompletions, err := g.GoalsRepository.GetGoalCompletionsCountById(goalId, firstDayOfWeek, nextSunday)
 
-	// TODO: Return a simple error
 	if goalCompletions.CompletionCount >= int64(goalCompletions.DesiredWeeklyFrequency) {
 		return errors.New("Goal already completed this week!")
 	}
@@ -57,4 +56,18 @@ func (g *GoalsService) GetPendingGoals() ([]repository.GetPendingGoalsResponse, 
 	goals, err := g.GoalsRepository.GetPendingGoals(firstDayOfWeek, nextSunday)
 
 	return goals, err
+}
+
+func (g *GoalsService) GetWeekSummary() (db.GetWeekSummaryRow, error) {
+	now := time.Now()
+
+	offset := (7 - int(now.Weekday())) % 7
+	nextSunday := now.AddDate(0, 0, offset)
+
+	offsetFirstDay := -int(now.Weekday())
+	firstDayOfWeek := now.AddDate(0, 0, offsetFirstDay)
+
+	summary, err := g.GoalsRepository.GetWeekSummary(firstDayOfWeek, nextSunday)
+
+	return summary, err
 }
