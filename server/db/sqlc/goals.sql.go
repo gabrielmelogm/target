@@ -70,6 +70,45 @@ func (q *Queries) DeleteAllGoals(ctx context.Context) error {
 	return err
 }
 
+const getGoalCompletionsCountById = `-- name: GetGoalCompletionsCountById :one
+WITH goals_created_up_to_week AS (
+    SELECT id, title, desired_weekly_frequency, goals.created_at 
+    FROM goals 
+    WHERE goals.created_at <= $2
+    and goals.id = $3
+),
+goal_completion_counts AS (
+    SELECT goal_id, COUNT(id) AS completion_count
+    FROM goal_completions
+    WHERE goal_completions.created_at >= $1
+    AND goal_completions.created_at <= $2
+    GROUP BY goal_completions.goal_id
+)
+select
+	goals_created_up_to_week.desired_weekly_frequency,
+	COALESCE(goal_completion_counts.completion_count, 0) as completion_count
+FROM goals_created_up_to_week
+LEFT JOIN goal_completion_counts ON goals_created_up_to_week.id = goal_completion_counts.goal_id
+`
+
+type GetGoalCompletionsCountByIdParams struct {
+	CreatedAt   time.Time `json:"created_at"`
+	CreatedAt_2 time.Time `json:"created_at_2"`
+	ID          string    `json:"id"`
+}
+
+type GetGoalCompletionsCountByIdRow struct {
+	DesiredWeeklyFrequency int32 `json:"desired_weekly_frequency"`
+	CompletionCount        int64 `json:"completion_count"`
+}
+
+func (q *Queries) GetGoalCompletionsCountById(ctx context.Context, arg GetGoalCompletionsCountByIdParams) (GetGoalCompletionsCountByIdRow, error) {
+	row := q.db.QueryRowContext(ctx, getGoalCompletionsCountById, arg.CreatedAt, arg.CreatedAt_2, arg.ID)
+	var i GetGoalCompletionsCountByIdRow
+	err := row.Scan(&i.DesiredWeeklyFrequency, &i.CompletionCount)
+	return i, err
+}
+
 const getPendingGoals = `-- name: GetPendingGoals :many
 WITH goals_created_up_to_week AS (
     SELECT id, title, desired_weekly_frequency, goals.created_at 

@@ -55,3 +55,29 @@ func (g *GoalsHandler) CreateNewGoal(c echo.Context) error {
 
 	return c.JSON(http.StatusCreated, createdGoal)
 }
+
+func (g *GoalsHandler) CreateNewGoalCompletionById(c echo.Context) error {
+	var data request.CreateNewGoalCompletionRequest
+
+	err := c.Bind(&data)
+
+	validate := validator.New()
+
+	err = validate.Struct(&data)
+
+	if err := validate.Struct(data); err != nil {
+		errors := make(map[string]string)
+		for _, err := range err.(validator.ValidationErrors) {
+			errors[err.Field()] = fmt.Sprintf("Field '%s' failed validation with tag '%s'", err.Field(), err.Tag())
+		}
+		return c.JSON(http.StatusBadRequest, echo.Map{"errors": errors})
+	}
+
+	err = g.GoalsService.CreateNewGoalCompletion(data.GoalId)
+
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	return c.JSON(http.StatusCreated, nil)
+}
