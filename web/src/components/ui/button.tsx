@@ -24,8 +24,13 @@ type ButtonProps = ComponentProps<"button"> & VariantProps<typeof button>;
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, color, size, ...props }, ref) => {
-    const styles = button({ color, size, className });
-    return <button className={styles} ref={ref} {...props} />;
+    return (
+      <button
+        className={button({ color, size, className })}
+        ref={ref}
+        {...props}
+      />
+    );
   },
 );
 
