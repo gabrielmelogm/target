@@ -18,6 +18,7 @@
 | Biblioteca | 
 | ------------- |
 | Go 1.22.x | 
+| Echo | 
 | Sqlc | 
 
 ### Front
