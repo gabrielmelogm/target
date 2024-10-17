@@ -56,6 +56,7 @@ goals_completed_in_week AS (
 	inner join goals on goals.id = goal_completions.goal_id 
 	WHERE goal_completions.created_at >= $1 
 	AND goal_completions.created_at <= $2 
+	ORDER BY goal_completions.created_at DESC
 ),
 goals_completed_by_week_day as (
 	select 
