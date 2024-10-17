@@ -4,7 +4,7 @@ import { tv, VariantProps } from "tailwind-variants";
 const button = tv({
   base: "flex items-center justify-center gap-2 rounded-lg text-sm font-medium tracking-tight outline-none ring-offset-2 ring-offset-black",
   variants: {
-    color: {
+    variant: {
       primary:
         "bg-violet-500 text-violet-50 hover:bg-violet-600 ring-violet-500",
       secondary: "bg-zinc-900 text-zinc-400 hover:bg-zinc-800 bg-zinc-900",
@@ -23,10 +23,10 @@ const button = tv({
 type ButtonProps = ComponentProps<"button"> & VariantProps<typeof button>;
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, color, size, ...props }, ref) => {
+  ({ className, variant, size, ...props }, ref) => {
     return (
       <button
-        className={button({ color, size, className })}
+        className={button({ variant, size, className })}
         ref={ref}
         {...props}
       />

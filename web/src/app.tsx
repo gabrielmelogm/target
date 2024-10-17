@@ -9,7 +9,7 @@ export function App() {
         mesmo?
       </p>
 
-      <Button type="button">
+      <Button type="button" variant="primary">
         <Plus className="size-4" />
         Cadastrar meta
       </Button>
