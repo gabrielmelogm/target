@@ -31,9 +31,9 @@ RUN echo "ENVIRONMENT=production" > .env && \
 
 WORKDIR /
 
-COPY --from=builder /build/db/migrations /db/migrations
-COPY --from=builder /build/makefile /makefile
 COPY --from=builder /app /app
+COPY --from=builder /build/db/migrations /app/db/migrations
+COPY --from=builder /build/makefile /app/makefile
 
 EXPOSE 8080
 
