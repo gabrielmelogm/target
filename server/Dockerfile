@@ -12,11 +12,15 @@ RUN go mod tidy
 
 COPY . .
 
+RUN go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
 RUN go build -o /app
 
 FROM alpine:3.18
 
 RUN apk add --no-cache make bash
+
+COPY --from=builder /go/bin/migrate /usr/local/bin/migrate
 
 ENV GIN_MODE=release
 
@@ -32,8 +36,8 @@ RUN echo "ENVIRONMENT=production" > .env && \
 WORKDIR /
 
 COPY --from=builder /app /app
-COPY --from=builder /build/db/migrations /app/db/migrations
-COPY --from=builder /build/makefile /app/makefile
+COPY --from=builder /build/db/migrations /db/migrations
+COPY --from=builder /build/makefile /makefile
 
 EXPOSE 8080
 
