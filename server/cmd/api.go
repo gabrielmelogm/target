@@ -19,6 +19,8 @@ func Server(goal *handler.GoalsHandler) {
 		AllowCredentials: true,
 	}))
 
+	e.Group("/api")
+
 	e.GET("/summary", goal.GetWeekSummary)
 	e.GET("/pending-goals", goal.GetPendingGoals)
 	e.POST("/completions", goal.CreateNewGoalCompletionById)
