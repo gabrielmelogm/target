@@ -14,7 +14,9 @@ COPY . .
 
 RUN go build -o /app
 
-FROM ghcr.io/surnet/alpine-node-wkhtmltopdf:latest
+FROM alpine:3.18
+
+RUN apk add --no-cache make bash
 
 ENV GIN_MODE=release
 
@@ -29,7 +31,7 @@ RUN echo "ENVIRONMENT=production" > .env && \
 
 WORKDIR /
 
-RUN mkdir /outputs
+COPY --from=builder /build/makefile /makefile
 COPY --from=builder /app /app
 
 EXPOSE 8080
