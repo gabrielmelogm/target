@@ -7,10 +7,8 @@ import (
 
 func ConnDB(config Config) *sql.DB {
 	var db *sql.DB
-	driver := config.Driver
-	dsn := config.Driver + "://" + config.User + ":" + config.Password + "@" +
-		config.Host + ":" + config.Port + "/" + config.Database + config.SSLMode
-	db, err := sql.Open(driver, dsn)
+	dsn := config.DbUrl
+	db, err := sql.Open("postgres", dsn)
 	if err != nil {
 		errConnection(config.Environment, err)
 	}

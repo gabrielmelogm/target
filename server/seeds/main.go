@@ -11,17 +11,11 @@ func main() {
 	loadedConfig := config.LoadConfig()
 	connDb := db.ConnDB(db.Config{
 		Environment: loadedConfig.Environment,
-		Driver:      loadedConfig.DBDriver,
-		Host:        loadedConfig.DBHost,
-		Port:        loadedConfig.DBPort,
-		User:        loadedConfig.DBUser,
-		Password:    loadedConfig.DBPass,
-		Database:    loadedConfig.DBName,
-		SSLMode:     loadedConfig.DBSSLMode,
+		DbUrl:       loadedConfig.DbUrl,
 	})
 
 	goalsRepository := repository.NewGoalsRepository(connDb)
-	seedsInstance := cmd.NewSeedsRun(*goalsRepository) 
+	seedsInstance := cmd.NewSeedsRun(*goalsRepository)
 
 	seedsInstance.Run()
 }
