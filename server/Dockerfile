@@ -33,7 +33,6 @@ WORKDIR /
 
 COPY --from=builder /app /app
 COPY --from=builder /build/db/migrations /db/migrations
-COPY --from=builder /build/seeds /seeds
 COPY --from=builder /build/makefile /makefile
 
 EXPOSE 8080
