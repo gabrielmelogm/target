@@ -24,6 +24,8 @@ COPY --from=builder /go/bin/migrate /usr/local/bin/migrate
 
 ENV GIN_MODE=release
 
+ARG DB_URL
+
 RUN echo "ENVIRONMENT=production" > .env && \
     echo "DB_URL=${DB_URL}" >> .env
 
