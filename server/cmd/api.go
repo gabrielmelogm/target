@@ -19,12 +19,13 @@ func Server(goal *handler.GoalsHandler) {
 		AllowCredentials: true,
 	}))
 
-	e.Group("/api")
+	api := e.Group("/api")
 
-	e.GET("/summary", goal.GetWeekSummary)
-	e.GET("/pending-goals", goal.GetPendingGoals)
-	e.POST("/completions", goal.CreateNewGoalCompletionById)
-	e.POST("/goal", goal.CreateNewGoal)
+	api.GET("/healthcheck", goal.GetHealthCheck)
+	api.GET("/summary", goal.GetWeekSummary)
+	api.GET("/pending-goals", goal.GetPendingGoals)
+	api.POST("/completions", goal.CreateNewGoalCompletionById)
+	api.POST("/goal", goal.CreateNewGoal)
 
 	e.Logger.Fatal(e.Start(":3333"))
 }

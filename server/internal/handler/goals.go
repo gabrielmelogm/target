@@ -20,6 +20,10 @@ func NewGoalHandler(goalsService service.GoalsService) *GoalsHandler {
 	}
 }
 
+func (g *GoalsHandler) GetHealthCheck(c echo.Context) error {
+	return c.String(http.StatusOK, "ok")
+}
+
 func (g *GoalsHandler) GetWeekSummary(c echo.Context) error {
 	summary, err := g.GoalsService.GetWeekSummary()
 
