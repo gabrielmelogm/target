@@ -18,7 +18,7 @@ RUN go build -o /app
 
 FROM alpine:3.18
 
-RUN apk add --no-cache make bash
+RUN apk add --no-cache make bash curl
 
 COPY --from=builder /go/bin/migrate /usr/local/bin/migrate
 
