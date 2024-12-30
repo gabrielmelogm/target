@@ -12,5 +12,6 @@ interface GoalsPerDayData {
   completed_at: string;
 }
 export async function getSummary(): Promise<SummaryResponse> {
-  return await fetch("http://localhost:3333/summary").then((res) => res.json());
+  return await fetch(`${import.meta.env.VITE_API_URL}/summary`)
+    .then((res) => res.json());
 }

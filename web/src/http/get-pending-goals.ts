@@ -7,7 +7,8 @@ export interface PendingGoalsResponse {
 }
 
 export async function getPendingGoals(): Promise<PendingGoalsResponse[]> {
-  return await fetch("http://localhost:3333/pending-goals").then((res) =>
-    res.json(),
-  );
+  return await fetch(`${import.meta.env.VITE_API_URL}/pending-goals`)
+    .then((res) =>
+      res.json(),
+    );
 }
